@@ -1,14 +1,37 @@
-# Northwind Logistics — AI Morning Portal
+# Tec-Tel · AI Operations Advisory — public sales site + live demo
 
-A sales demo for **Tec-Tel · AI Operations Advisory**. Prospects see what an AI-powered executive morning view looks like for a fictional cold-storage company, and can chat with an AI that knows the business inside and out.
+A single-page sales site for **Tec-Tel · AI Operations Advisory**. Marketing
+copy, capabilities + roadmap, pricing tiers, and a **working embedded chat
+demo** trained on the fictional Northwind Logistics business — all in one
+page. Same visual design system as the Jetro × Dragonfruit microsite.
 
-The Anthropic API key never leaves the server. The system prompt is baked into `server.js` so prospects can't see or modify it via devtools.
+The Anthropic API key never leaves the server. The `NORTHWIND_CONTEXT` system
+prompt is baked into `server.js` so prospects can't read or modify it via
+devtools.
+
+## What's on the page
+
+1. **Nav** — Tec-Tel logo + AI Operations Advisory badge + jump links
+2. **Hero** — headline, sub, two CTAs, four proof chips
+3. **Live demo** — embedded "morning portal" framed as a device:
+   - Three expandable morning items (Cisco, Freezer Zone 3, AR aging)
+   - "Everything else is handled" panel
+   - KPI strip
+   - Inline chat with starter chips → POSTs `/api/chat`
+4. **How it works** — 4-step process flow
+5. **Capabilities &amp; roadmap** — Live Today / In Dev / On the Horizon
+6. **Integration** — "We're integrators first" + 60-day guarantee
+7. **Pricing** — POV ($15K · 60 days) → 3 monthly tiers + 4 phases
+8. **Final CTA** — book a call (mailto) + contact card
+9. **Footer** — disclaimer + branding
 
 ## Stack
 
 - Node 18+ / Express (single `server.js`)
-- Static frontend (`public/index.html`) — vanilla JS, inline CSS, no build step
+- Static frontend (`public/index.html` + `public/styles.css`) — vanilla JS,
+  no build step, design system shared with the Jetro microsite
 - Anthropic Messages API (`claude-sonnet-4-20250514`)
+- `/api/chat` rate-limited to 30 reqs/IP per 10 min
 
 ## Local run
 
