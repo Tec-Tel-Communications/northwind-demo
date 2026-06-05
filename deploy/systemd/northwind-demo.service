@@ -1,0 +1,20 @@
+[Unit]
+Description=Northwind Logistics — public sales demo (Node/Express)
+After=network.target
+
+[Service]
+Type=simple
+User=tectel
+Group=tectel
+WorkingDirectory=/srv/AutomationsWorkspace/northwind-demo
+EnvironmentFile=/srv/AutomationsWorkspace/northwind-demo/.env
+Environment=NODE_ENV=production
+Environment=PORT=7080
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:/var/log/northwind-demo.log
+StandardError=append:/var/log/northwind-demo.log
+
+[Install]
+WantedBy=multi-user.target

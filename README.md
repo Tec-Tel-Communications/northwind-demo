@@ -29,30 +29,43 @@ Open http://localhost:3000. Click the three items, expand "Everything else is ha
 
 Each chat request is logged to stdout as `[<ISO timestamp>] chat: "<first 60 chars>"`.
 
-## Deploy — Render (recommended, ~5 min)
+## Deploy — Tec-Tel production server (primary)
 
-Render runs the Express process unmodified. Free tier is fine for a demo.
+Hosts alongside `cw-bot-fastapi` and `tec-tel-portal` on the existing
+Linux box. Exposed via Cloudflare Tunnel — no certbot, no port forwarding.
+
+Step-by-step runbook with the exact paths, systemd unit, and Cloudflare
+tunnel route lives in [`deploy/TEC-TEL-PROD.md`](deploy/TEC-TEL-PROD.md).
+
+The systemd unit ships in this repo at
+[`deploy/systemd/northwind-demo.service`](deploy/systemd/northwind-demo.service).
+It runs Node as the `tectel` user, listens on `127.0.0.1:7080`, and logs
+to `/var/log/northwind-demo.log`.
+
+### Update + restart
+
+```bash
+cd /srv/AutomationsWorkspace/northwind-demo
+git pull
+npm ci --omit=dev
+sudo systemctl restart northwind-demo
+```
+
+## Deploy — Render (alternative)
+
+If you'd rather host on a PaaS instead of your own box:
 
 1. Push the repo to GitHub.
 2. In Render: **New → Web Service → Connect this repo**.
-3. Settings:
-   - **Environment:** Node
-   - **Build Command:** `npm install`
-   - **Start Command:** `npm start`
-   - **Instance:** Free
-4. **Environment Variables:** add `ANTHROPIC_API_KEY` with your real key.
-5. Click **Create Web Service**. First deploy takes ~2 min.
-6. Render gives you a `*.onrender.com` URL. To use `northwind.tec-tel.com`:
-   - Render → your service → **Settings → Custom Domain → Add `northwind.tec-tel.com`**.
-   - Add the CNAME record Render shows you to Tec-Tel's DNS. Cert auto-provisions.
+3. Settings: Node · Build `npm install` · Start `npm start` ·
+   Instance type **Starter ($7/mo)** so the dyno stays warm (Free tier
+   sleeps after 15 min, which makes the demo URL feel broken).
+4. **Environment Variables:** add `ANTHROPIC_API_KEY`.
+5. **Health Check Path:** `/healthz`.
+6. Custom domain: Settings → Custom Domain → add `demo.tec-tel.com` and
+   point a CNAME at the URL Render gives you. Cert auto-provisions.
 
-### One-command deploy after initial setup
-
-```bash
-git push origin main
-```
-
-Render auto-deploys on push.
+Auto-deploys on every `git push origin main`.
 
 ## Deploy — Fly.io (alternative)
 
@@ -60,17 +73,6 @@ Render auto-deploys on push.
 fly launch          # accept defaults, skip Postgres / Redis
 fly secrets set ANTHROPIC_API_KEY=sk-ant-...
 fly deploy
-```
-
-## Deploy — VPS (alternative)
-
-```bash
-# on the box
-git clone <repo>
-cd northwind-demo
-npm install --omit=dev
-ANTHROPIC_API_KEY=sk-ant-... PORT=3000 node server.js
-# (front with nginx + certbot for the subdomain)
 ```
 
 ## Notes
